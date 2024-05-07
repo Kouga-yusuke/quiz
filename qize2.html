@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クイズ</title>
+</head>
+<body>
+
+<div id="quiz-container">
+  <h1>JavaScriptクイズ</h1>
+  <p id="question">次のうち、JavaScriptのフレームワークはどれですか？</p>
+  <ul id="options">
+    <li><button onclick="checkAnswer('React')">React</button></li>
+    <li><button onclick="checkAnswer('Angular')">Angular</button></li>
+    <li><button onclick="checkAnswer('Vue')">Vue</button></li>
+  </ul>
+</div>
+
+<div id="result-container" style="display: none;">
+  <h2 id="result-message"></h2>
+  <p id="score-message"></p>
+  <button onclick="retryQuiz()">リトライ</button>
+</div>
+
+<script>
+// クイズデータ
+const quizData = [
+  {
+    question: "次のうち、JavaScriptのフレームワークはどれですか？",
+    options: ["React", "Angular", "Vue"],
+    correctAnswer: "React"
+  },
+  {
+    question: "JavaScriptのデフォルトの関数引数の値は？",
+    options: ["undefined", "null", "0"],
+    correctAnswer: "undefined"
+  },
+  {
+    question: "JavaScriptのバージョンは？",
+    options: ["ES5", "ES6", "ES7"],
+    correctAnswer: "ES6"
+  },
+  {
+    question: "JavaScriptの非同期処理を行うためのキーワードは？",
+    options: ["async", "await", "both"],
+    correctAnswer: "both"
+  },
+  {
+    question: "JavaScriptでDOM要素を取得するためのメソッドは？",
+    options: ["getElement", "selectElement", "querySelector"],
+    correctAnswer: "querySelector"
+  },
+  {
+    question: "JavaScriptで文字列を結合する演算子は？",
+    options: ["+", "-", "*"],
+    correctAnswer: "+"
+  },
+  {
+    question: "JavaScriptの配列要素の追加に使用するメソッドは？",
+    options: ["push()", "add()", "insert()"],
+    correctAnswer: "push()"
+  },
+  {
+    question: "JavaScriptのif文で条件が満たされない場合に実行されるブロックは？",
+    options: ["else", "then", "otherwise"],
+    correctAnswer: "else"
+  },
+  {
+    question: "JavaScriptでオブジェクトのプロパティを削除するためのキーワードは？",
+    options: ["delete", "remove", "erase"],
+    correctAnswer: "delete"
+  },
+  {
+    question: "JavaScriptのループ構文の1つは？",
+    options: ["for", "while", "until"],
+    correctAnswer: "for"
+  },
+  {
+    question: "JavaScriptの関数を定義するためのキーワードは？",
+    options: ["function", "method", "procedure"],
+    correctAnswer: "function"
+  },
+  {
+    question: "JavaScriptの変数を宣言するためのキーワードは？",
+    options: ["let", "var", "const"],
+    correctAnswer: "let"
+  },
+  {
+    question: "JavaScriptで配列をスライスするメソッドは？",
+    options: ["slice()", "splice()", "split()"],
+    correctAnswer: "slice()"
+  },
+  {
+    question: "JavaScriptで条件を比較する演算子は？",
+    options: ["==", "===", "!=", "<>"],
+    correctAnswer: "==="
+  },
+  {
+    question: "JavaScriptの関数を呼び出すための演算子は？",
+    options: ["()", "=>", "{}"],
+    correctAnswer: "()"
+  }
+];
+
+let currentQuestion = 0;
+let correctAnswers = 0;
+let answerWindow;
+
+// クイズデータをシャッフルする関数
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// クイズデータをシャッフル
+shuffleArray(quizData);
+
+// 問題を表示する関数
+function displayQuestion() {
+  if (quizData.length === 0) {
+    document.getElementById('quiz-container').innerHTML = "<p>クイズデータがありません。</p>";
+    return;
+  }
+  
+  const quizContainer = document.getElementById('quiz-container');
+  const resultContainer = document.getElementById('result-container');
+  quizContainer.style.display = 'block';
+  resultContainer.style.display = 'none';
+
+  const questionElement = document.getElementById('question');
+  const optionsElement = document.getElementById('options');
+  const currentQuiz = quizData[currentQuestion];
+
+  questionElement.textContent = currentQuiz.question;
+  optionsElement.innerHTML = '';
+
+  currentQuiz.options.forEach(option => {
+    const button = document.createElement('button');
+    button.textContent = option;
+    button.onclick = () => checkAnswer(option);
+    optionsElement.appendChild(document.createElement('li')).appendChild(button);
+  });
+}
+
+// 回答をチェックする関数
+function checkAnswer(answer) {
+  const currentQuiz = quizData[currentQuestion];
+  let message;
+  if (answer === currentQuiz.correctAnswer) {
+    message = '正解です！';
+    correctAnswers++;
+  } else {
+    message = '不正解です。正解は ' + currentQuiz.correctAnswer + ' です。';
+  }
+
+  // 別ウィンドウで回答を表示
+  if (answerWindow) {
+    answerWindow.close(); // 前回の回答ウィンドウを閉じる
+  }
+  answerWindow = window.open('', '_blank', 'width=400,height=200');
+  answerWindow.document.write('<h2>回答チェック</h2>');
+  answerWindow.document.write('<p>' + message + '</p>');
+
+  // 次の問題に進む
+  currentQuestion++;
+  if (currentQuestion < quizData.length) {
+    displayQuestion();
+  } else {
+    showResult();
+  }
+}
+
+// クイズ結果を表示する関数
+function showResult() {
+  const quizContainer = document.getElementById('quiz-container');
+  const resultContainer = document.getElementById('result-container');
+  quizContainer.style.display = 'none';
+  resultContainer.style.display = 'block';
+
+  const resultMessageElement = document.getElementById('result-message');
+  // 正解率が100％の場合には "おめでとうございます！" のメッセージを表示
+  if (correctAnswers === quizData.length) {
+    resultMessageElement.textContent = 'クイズ終了です！おめでとうございます！';
+  } else {
+    resultMessageElement.textContent = 'クイズ終了です！';
+  }
+
+  const scoreMessageElement = document.getElementById('score-message');
+  scoreMessageElement.textContent = '正解数: ' + correctAnswers + ' / 全問題数: ' + quizData.length + ' 正解率: ' + ((correctAnswers / quizData.length) * 100).toFixed(2) + '%';
+}
+
+// リトライボタンをクリックしたときの処理
+function retryQuiz() {
+  currentQuestion = 0;
+  correctAnswers = 0;
+  if (answerWindow) {
+    answerWindow.close(); // 回答ウィンドウを閉じる
+  }
+  shuffleArray(quizData); // クイズデータを再度シャッフル
+  displayQuestion();
+}
+
+// 最初の問題を表示する
+displayQuestion();
+</script>
+
+</body>
+</html>
