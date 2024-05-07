@@ -121,7 +121,7 @@ shuffleArray(quizData);
 // 問題を表示する関数
 function displayQuestion() {
   if (quizData.length === 0) {
-    document.getElementById('quiz-container').innerHTML = "<p>クイズデータがありません。</p>";
+    document.getElementById('quiz-container').innerHTML = "<p>エラー：クイズデータがありません。</p>";
     return;
   }
   
